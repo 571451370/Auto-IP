@@ -1,0 +1,86 @@
+#!/bin/bash
+
+
+####Function####
+
+For_The_Looks () {
+	  line=#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!
+}
+
+Arch_Distro_Check () {
+
+	cat /etc/*-release |grep ID |cut  -d "=" -f "2" |egrep "^arch$|^manjaro$"
+
+	if [[ $? -eq 0 ]] ;then
+	  	Distro_Val="arch"
+	else
+	  	:
+	fi
+}
+
+
+Debian_Distro_Check () {
+
+	  cat /etc/*-release |grep ID |cut  -d "=" -f "2" |egrep "^debian$"
+
+	  if [[ $? -eq 0 ]] ;then
+	    	Distro_Val="debian"
+	  else
+	    	:
+	  fi
+	}
+
+CentOs_Distro_Check () {
+
+	cat /etc/*-release |grep ID |cut  -d "=" -f "2" |egrep "^\"centos\"$|^\"fedora\"$"
+
+	if [[ $? -eq 0 ]] ;then
+	   	Distro_Val="centos"
+	else
+		:
+	fi
+}
+
+Static_Ip () {
+
+	  if [[ $Distro_Val =~ "centos" ]] ;then
+		    int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]')
+			IFS="."
+
+		    IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
+
+			if [[ $? -eq 1 ]] ;then
+		      	exit
+		    else
+		      	:
+		    fi
+
+		    until [[ ${IP_Val[0]} -le 254 ]] && [[ ${IP_Val[0]} -ge 1 ]] && [[ ${IP_Val[1]} -le 254 ]] && [[ ${IP_Val[1]} -ge 0 ]] && [[ ${IP_Val[2]} -le 254 ]] && [[ ${IP_Val[2]} -ge 0 ]] && [[ ${IP_Val[3]} -le 254 ]] && [[ ${IP_Val[3]} -ge 0 ]] ;do
+			      zenity --error --text "Is it that hard to enter a valid address? try agin..." --width "200"
+			      IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
+		    done
+
+		    NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+
+			if [[ $? -eq 1 ]] ;then
+				exit
+			else
+				:
+			fi
+		    until [[ ${NetMask_Val[0]} -le 254 ]] && [[ ${NetMask_Val[0]} -ge 0 ]] && [[ ${NetMask_Val[1]} -le 254 ]] && [[ ${NetMask_Val[1]} -ge 0 ]] && [[ ${NetMask_Val[2]} -le 254 ]]  && [[ ${NetMask_Val[2]} -ge 0 ]] && [[ ${NetMask_Val[3]} -le 254 ]] && [[ ${NetMask_Val[3]} -ge 0 ]] ;do
+			      zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
+			      NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+		    done
+
+		    printf "IPADDR=${IP_Val[*]}\n" >> /etc/sysconfig/network-scripts/ifcfg-$int_name
+
+		    printf "NETMASK=${NetMask_Val[*]}\n" >> /etc/sysconfig/network-scripts/ifcfg-$int_name
+
+		else
+			:
+		fi
+
+}
+
+CentOs_Distro_Check
+Static_Ip
