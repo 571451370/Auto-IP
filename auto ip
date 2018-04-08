@@ -37,92 +37,97 @@ Distro_Check () {
 Static_IP () {
 
 	if [[ $Distro_Val =~ "centos" ]] ;then
-		    int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)
-			int_path=/etc/sysconfig/network-scripts/ifcfg-$int_name
-			local IFS="."
+	    int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)
+		int_path=/etc/sysconfig/network-scripts/ifcfg-$int_name
+		local IFS="."
 
-		    IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
+	    IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
 
-			if [[ $? -eq 1 ]] ;then
-		      	exit
-		    else
-		      	:
-		    fi
+		if [[ $? -eq 1 ]] ;then
+	      	exit
+	    else
+	      	:
+	    fi
 
-		    until [[ ${IP_Val[0]} -le 254 ]] && [[ ${IP_Val[0]} -ge 1 ]] && \
-			[[ ${IP_Val[1]} -le 254 ]] && [[ ${IP_Val[1]} -ge 0 ]] &&\
-			[[ ${IP_Val[2]} -le 254 ]] && [[ ${IP_Val[2]} -ge 0 ]] && \
-			[[ ${IP_Val[3]} -le 254 ]] && [[ ${IP_Val[3]} -ge 0 ]] && \
-			[[ ${#IP_Val[@]} -eq 4 ]] ;do
-			      zenity --error --text "Is it that hard to enter a valid address? try agin..." --width "200"
-			      IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
-				  if [[ $? -eq 1 ]] ;then
-					  exit
-				  else
-					  :
-				  fi
-		    done
+	    until [[ ${IP_Val[0]} -le 254 ]] && [[ ${IP_Val[0]} -ge 1 ]] && \
+		[[ ${IP_Val[1]} -le 254 ]] && [[ ${IP_Val[1]} -ge 0 ]] &&\
+		[[ ${IP_Val[2]} -le 254 ]] && [[ ${IP_Val[2]} -ge 0 ]] && \
+		[[ ${IP_Val[3]} -le 254 ]] && [[ ${IP_Val[3]} -ge 0 ]] && \
+		[[ ${#IP_Val[@]} -eq 4 ]] ;do
+		      zenity --error --text "Is it that hard to enter a valid address? try agin..." --width "200"
+		      IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
+			  if [[ $? -eq 1 ]] ;then
+				  exit
+			  else
+				  :
+			  fi
+	    done
 
-		    NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+	    NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
 
-			if [[ $? -eq 1 ]] ;then
-				exit
-			else
-				:
-			fi
-		    until [[ ${NetMask_Val[0]} -le 255 ]] && [[ ${NetMask_Val[0]} -ge 0 ]] && \
-			[[ ${NetMask_Val[1]} -le 255 ]] && [[ ${NetMask_Val[1]} -ge 0 ]] && \
-			[[ ${NetMask_Val[2]} -le 255 ]]  && [[ ${NetMask_Val[2]} -ge 0 ]] && \
-			[[ ${NetMask_Val[3]} -le 255 ]] && [[ ${NetMask_Val[3]} -ge 0 ]] && \
-			[[ ${#NetMask_Val[@]} -eq 4 ]] ;do
-			      zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
-			      NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
-				  if [[ $? -eq 1 ]] ;then
-					  exit
-				  else
-					  :
-				  fi
-		    done
+		if [[ $? -eq 1 ]] ;then
+			exit
+		else
+			:
+		fi
+	    until [[ ${NetMask_Val[0]} -le 255 ]] && [[ ${NetMask_Val[0]} -ge 0 ]] && \
+		[[ ${NetMask_Val[1]} -le 255 ]] && [[ ${NetMask_Val[1]} -ge 0 ]] && \
+		[[ ${NetMask_Val[2]} -le 255 ]]  && [[ ${NetMask_Val[2]} -ge 0 ]] && \
+		[[ ${NetMask_Val[3]} -le 255 ]] && [[ ${NetMask_Val[3]} -ge 0 ]] && \
+		[[ ${#NetMask_Val[@]} -eq 4 ]] ;do
+		      zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
+		      NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+			  if [[ $? -eq 1 ]] ;then
+				  exit
+			  else
+				  :
+			  fi
+	    done
 
-			Gateway_Val=($(zenity --entry --text "Please enter Gateway" --title "IP setup" --width "400"))
+		Gateway_Val=($(zenity --entry --text "Please enter Gateway" --title "IP setup" --width "400"))
 
-			if [[ $? -eq 1 ]] ;then
-				exit
-			else
-				:
-			fi
-			until [[ ${Gateway_Val[0]} -le 254 ]] && [[ ${Gateway_Val[0]} -ge 0 ]] && \
-			[[ ${Gateway_Val[1]} -le 254 ]] && [[ ${Gateway_Val[1]} -ge 0 ]] && \
-			[[ ${Gateway_Val[2]} -le 254 ]]  && [[ ${Gateway_Val[2]} -ge 0 ]] && \
-			[[ ${Gateway_Val[3]} -le 254 ]] && [[ ${Gateway_Val[3]} -ge 0 ]] && \
-			[[ ${#Gateway_Val[@]} -eq 4 ]] ;do
-				  zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
-				  NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
-				  if [[ $? -eq 1 ]] ;then
-					  exit
-				  else
-					  :
-				  fi
-			done
+		if [[ $? -eq 1 ]] ;then
+			exit
+		else
+			:
+		fi
+		until [[ ${Gateway_Val[0]} -le 254 ]] && [[ ${Gateway_Val[0]} -ge 0 ]] && \
+		[[ ${Gateway_Val[1]} -le 254 ]] && [[ ${Gateway_Val[1]} -ge 0 ]] && \
+		[[ ${Gateway_Val[2]} -le 254 ]]  && [[ ${Gateway_Val[2]} -ge 0 ]] && \
+		[[ ${Gateway_Val[3]} -le 254 ]] && [[ ${Gateway_Val[3]} -ge 0 ]] && \
+		[[ ${#Gateway_Val[@]} -eq 4 ]] ;do
+			  zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
+			  NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+			  if [[ $? -eq 1 ]] ;then
+				  exit
+			  else
+				  :
+			  fi
+		done
 
-			sed -ie 's/BOOTPROTO=.*/BOOTPROTO="static"/' $int_path
+		sed -ie 's/BOOTPROTO=.*/BOOTPROTO="static"/' $int_path
 
-			cat $int_path |egrep "^IPADDR|^NETMASK" &> /dev/null
+		cat $int_path |egrep "^IPADDR|^NETMASK" &> /dev/null
 
-			if [[ $? -eq 0 ]] ;then
-				sed -ie "s/IPADDR=.*/IPADDR=${IP_Val[*]}/" $int_path
-				sed -ie "s/NETMASK=.*/NETMASK=${NetMask_Val[*]}/" $int_path
-			else
-			    printf "IPADDR=${IP_Val[*]}\n" >> $int_path
-			    printf "NETMASK=${NetMask_Val[*]}\n" >> $int_path
-			fi
+		if [[ $? -eq 0 ]] ;then
+			sed -ie "s/IPADDR=.*/IPADDR=${IP_Val[*]}/" $int_path
+			sed -ie "s/NETMASK=.*/NETMASK=${NetMask_Val[*]}/" $int_path
+		else
+		    printf "IPADDR=${IP_Val[*]}\n" >> $int_path
+		    printf "NETMASK=${NetMask_Val[*]}\n" >> $int_path
+		fi
 
-			cat $int_path |egrep "^GATEWAY" &> /dev/null
+		cat $int_path |egrep "^GATEWAY" &> /dev/null
 
-			if [[ $? -eq 0 ]] ;then
-				sed -ie "s/GATEWAY=.*/GATEWAY=${Gateway_Val[*]}/" $int_path
-			else
-				printf "GATEWAY=${Gateway_Val[*]}\n" >> $int_path
+		if [[ $? -eq 0 ]] ;then
+			sed -ie "s/GATEWAY=.*/GATEWAY=${Gateway_Val[*]}/" $int_path
+		else
+			printf "GATEWAY=${Gateway_Val[*]}\n" >> $int_path
+		fi
+		systemctl restart network
+
+
+
 	else
 		:
 	fi
@@ -180,6 +185,7 @@ Static_DNS () {
 				  :
 			  fi
 		done
+		systemctl restart network
 	else
 		:
 	fi
