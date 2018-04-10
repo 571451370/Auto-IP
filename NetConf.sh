@@ -3,11 +3,11 @@
 
 ####Function####
 
-For_The_Looks () {		##  just some cosmetic
+For_The_Looks () {		## for decoration output only
 	  line=#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!#!
 }
 
-Root_Check () {
+Root_Check () {				# checks that the script runs as root
 	if [[ $EUID -eq 0 ]] ;then
 		:
 	else
@@ -16,7 +16,7 @@ Root_Check () {
 	fi
 }
 
-Zenity_Check () {
+Zenity_Check () {				# checks that zenity is installed
 	if [[ -e /usr/bin/zenity ]] ;then
 		:
 	else
@@ -26,7 +26,7 @@ Zenity_Check () {
 	fi
 }
 
-Distro_Check () {
+Distro_Check () {				## checking the environment the user is currenttly running on to determine which settings should be applied
 
 	cat /etc/*-release |grep ID |cut  -d "=" -f "2" |egrep "^arch$|^manjaro$"
 
@@ -53,81 +53,84 @@ Distro_Check () {
 	fi
 }
 
-Static_IP () {
+Static_IP () {				## configure static IP
 	Distro_Check
-	local IFS="."
-    IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
+	local IFS="."		## sets the internal field separator to "." so we could inspect the data from the user as elements in an array
+  IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))				## prompte the gui for the user to enter an IP and puts it into a variabl
 
-	if [[ $? -eq 1 ]] ;then
+	if [[ $? -eq 1 ]] ;then				## check with exit status if the user wants to exit the script
       	exit
     else
       	:
     fi
 
-    until [[ ${IP_Val[0]} -le 254 ]] && [[ ${IP_Val[0]} -ge 1 ]] && \
+	until [[ ${IP_Val[0]} -le 254 ]] && [[ ${IP_Val[0]} -ge 1 ]] && \				## validation check for correct IP value
 	[[ ${IP_Val[1]} -le 254 ]] && [[ ${IP_Val[1]} -ge 0 ]] && \
 	[[ ${IP_Val[2]} -le 254 ]] && [[ ${IP_Val[2]} -ge 0 ]] && \
 	[[ ${IP_Val[3]} -le 254 ]] && [[ ${IP_Val[3]} -ge 0 ]] && \
 	[[ ${#IP_Val[@]} -eq 4 ]] ;do
-	      zenity --error --text "Is it that hard to enter a valid address? try agin..." --width "200"
-	      IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
-		  if [[ $? -eq 1 ]] ;then
-			  exit
-		  else
-			  :
-		  fi
-    done
+    zenity --error --text "Is it that hard to enter a valid address? try agin..." --width "200"
+    IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
+	  if [[ $? -eq 1 ]] ;then				## check with exit status if the user wants to exit the script
+		  exit
+	  else
+		  :
+	  fi
+  done
 
-    NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+  NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))				## prompte the gui for the user to enter NetMask and puts it into a variable
 
-	if [[ $? -eq 1 ]] ;then
+	if [[ $? -eq 1 ]] ;then				## check with exit status if the user wants to exit the script
 		exit
 	else
 		:
 	fi
-    until [[ ${NetMask_Val[0]} -le 255 ]] && [[ ${NetMask_Val[0]} -ge 0 ]] && \
+  until [[ ${NetMask_Val[0]} -le 255 ]] && [[ ${NetMask_Val[0]} -ge 0 ]] && \
 	[[ ${NetMask_Val[1]} -le 255 ]] && [[ ${NetMask_Val[1]} -ge 0 ]] && \
 	[[ ${NetMask_Val[2]} -le 255 ]]  && [[ ${NetMask_Val[2]} -ge 0 ]] && \
 	[[ ${NetMask_Val[3]} -le 255 ]] && [[ ${NetMask_Val[3]} -ge 0 ]] && \
 	[[ ${#NetMask_Val[@]} -eq 4 ]] ;do
-	      zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
-	      NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
-		  if [[ $? -eq 1 ]] ;then
-			  exit
-		  else
-			  :
-		  fi
+    zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
+    NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+	  if [[ $? -eq 1 ]] ;then
+		  exit
+	  else
+		  :
+	  fi
     done
 
-	Gateway_Val=($(zenity --entry --text "Please enter Gateway" --title "IP setup" --width "400"))
+	Gateway_Val=($(zenity --entry --text "Please enter Gateway" --title "IP setup" --width "400"))				## prompte the gui for the user to enter a gateway and puts it into a variable
 
-	if [[ $? -eq 1 ]] ;then
+	if [[ $? -eq 1 ]] ;then				## check with exit status if the user wants to exit the script
 		exit
 	else
 		:
 	fi
-	until [[ ${Gateway_Val[0]} -le 254 ]] && [[ ${Gateway_Val[0]} -ge 0 ]] && \
+	until [[ ${Gateway_Val[0]} -le 254 ]] && [[ ${Gateway_Val[0]} -ge 0 ]] && \				## validation check for correct gateway value
 	[[ ${Gateway_Val[1]} -le 254 ]] && [[ ${Gateway_Val[1]} -ge 0 ]] && \
 	[[ ${Gateway_Val[2]} -le 254 ]]  && [[ ${Gateway_Val[2]} -ge 0 ]] && \
 	[[ ${Gateway_Val[3]} -le 254 ]] && [[ ${Gateway_Val[3]} -ge 0 ]] && \
 	[[ ${#Gateway_Val[@]} -eq 4 ]] ;do
-		  zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
-		  NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
-		  if [[ $? -eq 1 ]] ;then
-			  exit
-		  else
-			  :
-		  fi
+	  zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
+	  NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+	  if [[ $? -eq 1 ]] ;then				## validation check for correct gateway value
+		  exit
+	  else
+		  :
+	  fi
 	done
 
-	if [[ $Distro_Val =~ "centos" ]] ;then
-		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)
-		int_path=/etc/sysconfig/network-scripts/ifcfg-$int_name
+	if [[ $Distro_Val =~ "centos" ]] ;then				## checks the user's environment
+		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)				## gets the interface name into a variable
+		int_path=/etc/sysconfig/network-scripts/ifcfg-$int_name				## gets the interface's configuration file path into a variable (this is just for convenience purposes)
 
-		sed -ie 's/BOOTPROTO=.*/BOOTPROTO="static"/' $int_path
+		sed -ie 's/BOOTPROTO=.*/BOOTPROTO="static"/' $int_path				## sets static configuration in the configuration file of the interface (*confusing sentence isn't it? ;D)
+		cat $int_path |egrep "^IPADDR|^NETMASK" &> /dev/null				## checks if static configuration has already exist and throws the stdout and stderr to /dev/null
 
-		cat $int_path |egrep "^IPADDR|^NETMASK" &> /dev/null
-
+		#: <<COMMENT
+		#checks exit status of last command to determine the next course of action,
+		#if static configuration exists, fix it, if not, append static configuration
+		#COMMENT
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/IPADDR=.*/IPADDR=${IP_Val[*]}/" $int_path
 			sed -ie "s/NETMASK=.*/NETMASK=${NetMask_Val[*]}/" $int_path
@@ -136,32 +139,45 @@ Static_IP () {
 		    printf "NETMASK=${NetMask_Val[*]}\n" >> $int_path
 		fi
 
-		cat $int_path |egrep "^GATEWAY" &> /dev/null
+		cat $int_path |egrep "^GATEWAY" &> /dev/null				## checks if static configuration has already exist
 
+		#: <<COMMENT
+		#checks exit status of last command to determine the next course of action,
+		#if static configuration exists, fix it, if not, append static configuration
+		#COMMENT
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/GATEWAY=.*/GATEWAY=${Gateway_Val[*]}/" $int_path
 		else
 			printf "GATEWAY=${Gateway_Val[*]}\n" >> $int_path
 		fi
-		systemctl restart network
-		if [[ $? -eq 0 ]] ;then
+		systemctl restart network				## restart the network service
+		if [[ $? -eq 0 ]] ;then				## validating if the network service has restarted successfully with exit status
 			zenity --info --text "IP configuration completed successfully" --width 250
 			menu
 		else
 			zenity --error --text "Something went wrong trying to restart the \"network\" service" --width 250
 		fi
 
-	elif [[ $Distro_Val =~ "debian" ]] ;then
-		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)
-		int_path=/etc/network/interfaces
+	elif [[ $Distro_Val =~ "debian" ]] ;then				## checks the user's environment
+		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)		## gets the interface name into a variable
+		int_path=/etc/network/interfaces				## gets the interface's configuration file path into a variable (this is just for convenience purposes)
 
-		cat /etc/network/interfaces |egrep -Eo "^iface $int_name inet static$" &> /dev/null
+		cat /etc/network/interfaces |egrep -Eo "^iface $int_name inet static$" &> /dev/null				## checks if static configuration has already exist and throws the stdout and stderr to /dev/nul
 
+		#: <<COMMENT
+		#checks exit status of last command to determine the next course of action,
+		#if static configuration exists, fix it, if not, append static configuration
+		#COMMENT
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/address.*/address $IP_Val/" $int_path
 			sed -ie "s/netmask.*/netmask $NetMask_Val/" $int_path
 
-			cat $int_path |egrep -Eo "gateway" &> /dev/null
+			cat $int_path |egrep -Eo "gateway" &> /dev/null				## checks if static configuration has already exist
+
+			#: <<COMMENT
+			#checks exit status of last command to determine the next course of action,
+			#if static configuration exists, fix it, if not, append static configuration
+			#COMMENT
 			if [[ $? -eq 0 ]] ;then
 				sed -ie "s/gateway.*/gateway ${Gateway_Val[*]}" $int_path
 			else
@@ -170,6 +186,11 @@ Static_IP () {
 
 		else
 			cat $int_path |egrep -Eo "^iface $int_name inet dhcp$" &> /dev/null
+
+			#: <<COMMENT
+			#checks exit status of last command to determine the next course of action,
+			#if static configuration exists, fix it, if not, append static configuration
+			#COMMENT
 			if [[ $? -eq 0 ]] ;then
 				sed -ie "s/iface $int_name inet dhcp/iface $int_name inet static" $int_path
 				printf "\taddress ${IP_Val[*]}\n \tnetmask ${NetMask_Val[*]}\n \tgateway ${Gateway_Val[*]}\n" >> $int_path
@@ -179,29 +200,29 @@ Static_IP () {
 			fi
 		fi
 
-		systemctl stop NetworkManager
-		if [[ $? -eq 0 ]] ;then
+		systemctl stop NetworkManager				## kills the NetworkManager service so it will not interfere with the networking service
+		if [[ $? -eq 0 ]] ;then				## validating if the NetworkManager service has stoped successfully with exit status
 			:
 		else
 			zenity --error --text "Something went wrong while stoping the \"NetworkManager\" service" --width 250
 		fi
 
-		systemctl disable NetworkManager
-		if [[ $? -eq 0 ]] ;then
+		systemctl disable NetworkManager				## Disables the NetworkManager service from starting upon startup so it will not interfere with the networking service
+		if [[ $? -eq 0 ]] ;then				## validating if the NetworkManager service has been disabled successfully with exit status
 			:
 		else
 			zenity --error --text "Something went wrong while trying to disable the \"NetworkManager\" service" --width 250
 		fi
 
-		ip addr flush dev $int_name
-		if [[ $? -eq 0 ]] ;then
+		ip addr flush dev $int_name			## flushes the interface's current IP address so it will not duplicate or interfere the new settings
+		if [[ $? -eq 0 ]] ;then				## validating if the interface has flushed its IP address successfully with exit status
 			:
 		else
 			zenity --error --text "Something went wrong while trying to flush the ip on $int_name" --width 250
 		fi
 
-		systemctl restart networking
-		if [[ $? -eq 0 ]] ;then
+		systemctl restart networking					## restart the networking service
+		if [[ $? -eq 0 ]] ;then				## validating if the networking service has restarted successfully with exit status
 			zenity --info --text "IP configuration completed successfully" --width 250
 		else
 			zenity --error --text "Something went wrong while trying to restart the \"networking\" service" --width 250
@@ -215,7 +236,7 @@ Static_IP () {
 }
 
 
-Static_DNS () {
+Static_DNS () {				## configure static DNS (follow the Static_IP function for documentation, it has the same principles)
 	Distro_Check
 	local IFS="."
 
@@ -336,18 +357,18 @@ Static_DNS () {
 }
 
 
-menu () {
-	Root_Check
-	Zenity_Check
+menu () {				## gui menu for selecting which setting to config
+	Root_Check				## call the Root_Check function
+	Zenity_Check				## call the Zenity_Check function
 
-	Menu_Val=$(zenity --list \
+	Menu_Val=$(zenity --list \				## gui menu for the user to select whether he wants to configure static DNS or IP
 	--text "What would you like to configure?" --title "Network configuration"  \
 	--column=Script --column="Description" \
 	--width 400 --height 400 "IP" "configure static IP address" "DNS" "Configure static main and scondary DNS servers")
 
-	if [[ $Menu_Val =~ "IP" ]] ;then
+	if [[ $Menu_Val =~ "IP" ]] ;then				## if the user selects IP, call Static_IP function
 		Static_IP
-	elif [[ $Menu_Val =~ "DNS" ]]; then
+	elif [[ $Menu_Val =~ "DNS" ]]; then				## if the user selects DNS call Static_DNS function
 		Static_DNS
 	else
 		exit
