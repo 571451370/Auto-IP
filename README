@@ -1,4 +1,12 @@
-This is gui script for configuring static ip and dns.
+This is a gui script for configuring static ip and dns.
+The script currently supports the following distribution:
+- Debian
+- Ubuntu
+- Fedora
+- Centos 
+
+it was tested on their latest main version (as of April 2018) so there's no guarantee
+it's going to work on older versions.
 
 To run this script run:
 
