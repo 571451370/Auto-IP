@@ -1,0 +1,9 @@
+This is gui script for configuring static ip and dns.
+
+To run this script run:
+
+1. mkdir ~/NetConf_Script ; cd ~/NetConf_Script
+
+2. git clone https://github.com/BigRush/automation.git
+
+2. sudo bash NetConf.sh
