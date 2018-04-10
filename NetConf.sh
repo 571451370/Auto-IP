@@ -127,10 +127,10 @@ Static_IP () {		## configure static IP
 		sed -ie 's/BOOTPROTO=.*/BOOTPROTO="static"/' $int_path		## sets static configuration in the configuration file of the interface (*confusing sentence isn't it? ;D)
 		cat $int_path |egrep "^IPADDR|^NETMASK" &> /dev/null		## checks if static configuration has already exist and throws the stdout and stderr to /dev/null
 
-		: <<COMMENT
-		checks exit status of last command to determine the next course of action,
-		if static configuration exists, fix it, if not, append static configuration
-		COMMENT
+<<COMMENT
+checks exit status of last command to determine the next course of action,
+if static configuration exists, fix it, if not, append static configuration
+COMMENT
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/IPADDR=.*/IPADDR=${IP_Val[*]}/" $int_path
 			sed -ie "s/NETMASK=.*/NETMASK=${NetMask_Val[*]}/" $int_path
@@ -141,10 +141,10 @@ Static_IP () {		## configure static IP
 
 		cat $int_path |egrep "^GATEWAY" &> /dev/null		## checks if static configuration has already exist
 
-		#: <<COMMENT
-		#checks exit status of last command to determine the next course of action,
-		#if static configuration exists, fix it, if not, append static configuration
-		#COMMENT
+<<COMMENT
+checks exit status of last command to determine the next course of action,
+if static configuration exists, fix it, if not, append static configuration
+COMMENT
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/GATEWAY=.*/GATEWAY=${Gateway_Val[*]}/" $int_path
 		else
@@ -164,10 +164,10 @@ Static_IP () {		## configure static IP
 
 		cat /etc/network/interfaces |egrep -Eo "^iface $int_name inet static$" &> /dev/null		## checks if static configuration has already exist and throws the stdout and stderr to /dev/nul
 
-		#: <<COMMENT
-		#checks exit status of last command to determine the next course of action,
-		#if static configuration exists, fix it, if not, append static configuration
-		#COMMENT
+<<COMMENT
+checks exit status of last command to determine the next course of action,
+if static configuration exists, fix it, if not, append static configuration
+COMMENT
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/address.*/address $IP_Val/" $int_path
 			sed -ie "s/netmask.*/netmask $NetMask_Val/" $int_path
@@ -187,10 +187,10 @@ Static_IP () {		## configure static IP
 		else
 			cat $int_path |egrep -Eo "^iface $int_name inet dhcp$" &> /dev/null
 
-			#: <<COMMENT
-			#checks exit status of last command to determine the next course of action,
-			#if static configuration exists, fix it, if not, append static configuration
-			#COMMENT
+<<COMMENT
+checks exit status of last command to determine the next course of action,
+if static configuration exists, fix it, if not, append static configuration
+COMMENT
 			if [[ $? -eq 0 ]] ;then
 				sed -ie "s/iface $int_name inet dhcp/iface $int_name inet static" $int_path
 				printf "\taddress ${IP_Val[*]}\n \tnetmask ${NetMask_Val[*]}\n \tgateway ${Gateway_Val[*]}\n" >> $int_path
