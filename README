@@ -2,6 +2,7 @@ This is a gui script for configuring static ip and dns.
 The script currently supports the following distribution:
 - Debian
 - Ubuntu
+- Xubuntu
 - Fedora
 - Centos 
 
