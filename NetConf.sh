@@ -349,9 +349,8 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 			zenity --error --text "Something went wrong while trying to restart the \"networking\" service" --width 250
 		fi
 
-		else
-			printf "Sorry but this script does not support your system\n"
-		fi
+	else
+		printf "Sorry but this script does not support your system\n"
 	fi
 
 }
