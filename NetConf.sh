@@ -154,8 +154,8 @@ Static_IP () {		## configure static IP
 		fi
 		## restart the network service
 		(
-		sleep 1; \
-		systemctl restart network \
+		sleep 1
+		systemctl restart network
 		) |
 		zenity --progress --title "Net Config" --text "Restarting the network service" --pulsate --auto-close --width 250
 		if [[ $? -eq 0 ]] ;then		## validating if the network service has restarted successfully with exit status, if not fall back to previews configuration
@@ -314,8 +314,8 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 		fi
 
 		(
-		sleep 1; \
-		systemctl restart network \
+		sleep 1
+		systemctl restart network
 		) |
 		zenity --progress --title "Net Config" --text "Restarting the network service" --pulsate --auto-close --width 250
 		if [[ $? -eq 0 ]] ;then		## validating if the network service has restarted successfully with exit status, if not fall back to previews configuration
@@ -328,7 +328,7 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 
 	elif [[ $Distro_Val =~ "debian" ]]; then
 		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)
-		int_path=/etc/interfaces
+		int_path=/etc/network/interfaces
 		cat $int_path > $int_path.bck
 
 		cat $int_path |egrep -Eo "dns-servers"
