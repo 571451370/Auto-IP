@@ -176,8 +176,8 @@ Static_IP () {		## configure static IP
 		## checks exit status of last command to determine the next course of action,
 		## if static configuration exists, fix it, if not, append static configuration
 		if [[ $? -eq 0 ]] ;then
-			sed -ie "s/address.*/address $IP_Val/" $int_path
-			sed -ie "s/netmask.*/netmask $NetMask_Val/" $int_path
+			sed -ie "s/address.*/address ${IP_Val[*]}/" $int_path
+			sed -ie "s/netmask.*/netmask ${NetMask_Val[*]}/" $int_path
 
 			cat $int_path |egrep -Eo "gateway" &> /dev/null		## checks if static configuration has already exist
 
@@ -367,6 +367,7 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 		systemctl restart networking			## restart the networking service
 		if [[ $? -eq 0 ]] ;then		## validating if the networking service has restarted successfully with exit status, if not fall back to previews configuration
 			zenity --info --text "IP configuration completed successfully" --width 250
+			menu
 		else
 			zenity --error --text "Something went wrong while trying to restart the \"networking\" service" --width 250
 			cat $int_path.bck > $int_path
