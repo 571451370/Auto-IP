@@ -36,7 +36,7 @@ Distro_Check () {		## checking the environment the user is currenttly running on
 	  	:
 	fi
 
-	  cat /etc/*-release |grep ID |cut  -d "=" -f "2" |egrep "^debian$"
+	  cat /etc/*-release |grep ID |cut  -d "=" -f "2" |egrep "^debian$|^\"Ubuntu\"$"
 
 	  if [[ $? -eq 0 ]] ;then
 	    	Distro_Val="debian"
@@ -128,14 +128,13 @@ Static_IP () {		## configure static IP
 	if [[ $Distro_Val =~ "centos" ]] ;then		## checks the user's environment
 		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)		## gets the interface name into a variable
 		int_path=/etc/sysconfig/network-scripts/ifcfg-$int_name		## gets the interface's configuration file path into a variable (this is just for convenience purposes)
+		cat $int_path > $int_path.bck		## makes a backup file of the interface configuration incase something goes wrong
 
 		sed -ie 's/BOOTPROTO=.*/BOOTPROTO="static"/' $int_path		## sets static configuration in the configuration file of the interface (*confusing sentence isn't it? ;D)
 		cat $int_path |egrep "^IPADDR|^NETMASK" &> /dev/null		## checks if static configuration has already exist and throws the stdout and stderr to /dev/null
 
-<<COMMENT
-checks exit status of last command to determine the next course of action,
-if static configuration exists, fix it, if not, append static configuration
-COMMENT
+		## checks exit status of last command to determine the next course of action,
+		## if static configuration exists, fix it, if not, append static configuration
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/IPADDR=.*/IPADDR=${IP_Val[*]}/" $int_path
 			sed -ie "s/NETMASK=.*/NETMASK=${NetMask_Val[*]}/" $int_path
@@ -146,43 +145,44 @@ COMMENT
 
 		cat $int_path |egrep "^GATEWAY" &> /dev/null		## checks if static configuration has already exist
 
-<<COMMENT
-checks exit status of last command to determine the next course of action,
-if static configuration exists, fix it, if not, append static configuration
-COMMENT
+		## checks exit status of last command to determine the next course of action,
+		## if static configuration exists, fix it, if not, append static configuration
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/GATEWAY=.*/GATEWAY=${Gateway_Val[*]}/" $int_path
 		else
 			printf "GATEWAY=${Gateway_Val[*]}\n" >> $int_path
 		fi
-		systemctl restart network		## restart the network service
-		if [[ $? -eq 0 ]] ;then		## validating if the network service has restarted successfully with exit status
+		## restart the network service
+		(
+		sleep 1; \
+		systemctl restart network \
+		) |
+		zenity --progress --title "Net Config" --text "Restarting the network service" --pulsate --auto-close --width 250
+		if [[ $? -eq 0 ]] ;then		## validating if the network service has restarted successfully with exit status, if not fall back to previews configuration
 			zenity --info --text "IP configuration completed successfully" --width 250
 			menu
 		else
-			zenity --error --text "Something went wrong while restarting the \"network\" service" --width 250
+			zenity --error --text "Something went wrong while restarting the \"network\" service, falling back to previews state." --width 250
+			cat $int_path.bck > $int_path
 		fi
 
 	elif [[ $Distro_Val =~ "debian" ]] ;then		## checks the user's environment
 		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)		## gets the interface name into a variable
 		int_path=/etc/network/interfaces				## gets the interface's configuration file path into a variable (this is just for convenience purposes)
+		cat $int_path > $int_path.bck		## makes a backup file of the interfaces configuration  incase something goes wrong
 
-		cat /etc/network/interfaces |egrep -Eo "^iface $int_name inet static$" &> /dev/null		## checks if static configuration has already exist and throws the stdout and stderr to /dev/nul
+		cat $int_path |egrep -Eo "^iface $int_name inet static$" &> /dev/null		## checks if static configuration has already exist and throws the stdout and stderr to /dev/nul
 
-<<COMMENT
-checks exit status of last command to determine the next course of action,
-if static configuration exists, fix it, if not, append static configuration
-COMMENT
+		## checks exit status of last command to determine the next course of action,
+		## if static configuration exists, fix it, if not, append static configuration
 		if [[ $? -eq 0 ]] ;then
 			sed -ie "s/address.*/address $IP_Val/" $int_path
 			sed -ie "s/netmask.*/netmask $NetMask_Val/" $int_path
 
 			cat $int_path |egrep -Eo "gateway" &> /dev/null		## checks if static configuration has already exist
 
-			#: <<COMMENT
-			#checks exit status of last command to determine the next course of action,
-			#if static configuration exists, fix it, if not, append static configuration
-			#COMMENT
+			## checks exit status of last command to determine the next course of action,
+			## ןf static configuration exists, fix it, if not, append static configuration
 			if [[ $? -eq 0 ]] ;then
 				sed -ie "s/gateway.*/gateway ${Gateway_Val[*]}" $int_path
 			else
@@ -192,10 +192,8 @@ COMMENT
 		else
 			cat $int_path |egrep -Eo "^iface $int_name inet dhcp$" &> /dev/null
 
-<<COMMENT
-checks exit status of last command to determine the next course of action,
-if static configuration exists, fix it, if not, append static configuration
-COMMENT
+			## checks exit status of last command to determine the next course of action,
+			## if static configuration exists, fix it, if not, append static configuration
 			if [[ $? -eq 0 ]] ;then
 				sed -ie "s/iface $int_name inet dhcp/iface $int_name inet static" $int_path
 				printf "\taddress ${IP_Val[*]}\n \tnetmask ${NetMask_Val[*]}\n \tgateway ${Gateway_Val[*]}\n" >> $int_path
@@ -205,33 +203,40 @@ COMMENT
 			fi
 		fi
 
+		(
 		systemctl stop NetworkManager		## kills the NetworkManager service so it will not interfere with the networking service
-		if [[ $? -eq 0 ]] ;then		## validating if the NetworkManager service has stoped successfully with exit status
+		if [[ $? -eq 0 ]] ;then		## validating if the NetworkManager service has stoped successfully with exit status, if not fall back to previews configuration
 			:
 		else
 			zenity --error --text "Something went wrong while stoping the \"NetworkManager\" service" --width 250
+			cat $int_path.bck > $int_path
 		fi
 
 		systemctl disable NetworkManager		## Disables the NetworkManager service from starting upon startup so it will not interfere with the networking service
-		if [[ $? -eq 0 ]] ;then		## validating if the NetworkManager service has been disabled successfully with exit status
+		if [[ $? -eq 0 ]] ;then		## validating if the NetworkManager service has been disabled successfully with exit status, if not fall back to previews configuration
 			:
 		else
 			zenity --error --text "Something went wrong while trying to disable the \"NetworkManager\" service" --width 250
+			cat $int_path.bck > $int_path
 		fi
 
 		ip addr flush dev $int_name		## flushes the interface's current IP address so it will not duplicate or interfere the new settings
-		if [[ $? -eq 0 ]] ;then		## validating if the interface has flushed its IP address successfully with exit status
+		if [[ $? -eq 0 ]] ;then		## validating if the interface has flushed its IP address successfully with exit status, if not fall back to previews configuration
 			:
 		else
 			zenity --error --text "Something went wrong while trying to flush the ip on $int_name" --width 250
+			cat $int_path.bck > $int_path
 		fi
 
 		systemctl restart networking			## restart the networking service
-		if [[ $? -eq 0 ]] ;then		## validating if the networking service has restarted successfully with exit status
+		if [[ $? -eq 0 ]] ;then		## validating if the networking service has restarted successfully with exit status, if not fall back to previews configuration
 			zenity --info --text "IP configuration completed successfully" --width 250
 		else
 			zenity --error --text "Something went wrong while trying to restart the \"networking\" service" --width 250
+			cat $int_path.bck > $int_path
 		fi
+		) |
+		zenity --progress --title "Net Config" --text "Re-configuring network services" --pulsate --auto-close --width 250
 
 	else
 		printf "Sorry but this script does not support your system\n"
