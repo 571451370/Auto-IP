@@ -231,6 +231,7 @@ Static_IP () {		## configure static IP
 		systemctl restart networking			## restart the networking service
 		if [[ $? -eq 0 ]] ;then		## validating if the networking service has restarted successfully with exit status, if not fall back to previews configuration
 			zenity --info --text "IP configuration completed successfully" --width 250
+			menu
 		else
 			zenity --error --text "Something went wrong while trying to restart the \"networking\" service" --width 250
 			cat $int_path.bck > $int_path
@@ -301,14 +302,14 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 
 		cat $int_path |egrep -Eo "^DNS1" &> /dev/null
 		if [[ $? -eq 0 ]] ;then
-			sed -ie "s/DNS1=.*/DNS1=${DNS1_Val[*]}/ $int_path"
+			sed -ie "s/DNS1=.*/DNS1=${DNS1_Val[*]}/" $int_path
 		else
 			printf "DNS1=${DNS1_Val[*]}\n" >> $int_path
 		fi
 
 		cat $int_path |egrep -Eo "^DNS2" &> /dev/null
 		if [[ $? -eq 0 ]] ;then
-			sed -ie "s/DNS2=.*/DNS2=${DNS2_Val[*]}/ $int_path"
+			sed -ie "s/DNS2=.*/DNS2=${DNS2_Val[*]}/" $int_path
 		else
 			printf "DNS2=${DNS2_Val[*]}\n" >> $int_path
 		fi
