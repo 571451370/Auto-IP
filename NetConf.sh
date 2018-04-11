@@ -64,7 +64,8 @@ Static_IP () {		## configure static IP
       	:
     fi
 
-	until [[ ${IP_Val[0]} -le 254 ]] && [[ ${IP_Val[0]} -ge 1 ]] && \		## validation check for correct IP value
+	## validation check for correct IP value
+	until [[ ${IP_Val[0]} -le 254 ]] && [[ ${IP_Val[0]} -ge 1 ]] && \
 	[[ ${IP_Val[1]} -le 254 ]] && [[ ${IP_Val[1]} -ge 0 ]] && \
 	[[ ${IP_Val[2]} -le 254 ]] && [[ ${IP_Val[2]} -ge 0 ]] && \
 	[[ ${IP_Val[3]} -le 254 ]] && [[ ${IP_Val[3]} -ge 0 ]] && \
@@ -85,7 +86,9 @@ Static_IP () {		## configure static IP
 	else
 		:
 	fi
-  until [[ ${NetMask_Val[0]} -le 255 ]] && [[ ${NetMask_Val[0]} -ge 0 ]] && \
+
+	## validation check for correct NetMask value
+	until [[ ${NetMask_Val[0]} -le 255 ]] && [[ ${NetMask_Val[0]} -ge 0 ]] && \
 	[[ ${NetMask_Val[1]} -le 255 ]] && [[ ${NetMask_Val[1]} -ge 0 ]] && \
 	[[ ${NetMask_Val[2]} -le 255 ]]  && [[ ${NetMask_Val[2]} -ge 0 ]] && \
 	[[ ${NetMask_Val[3]} -le 255 ]] && [[ ${NetMask_Val[3]} -ge 0 ]] && \
@@ -106,7 +109,9 @@ Static_IP () {		## configure static IP
 	else
 		:
 	fi
-	until [[ ${Gateway_Val[0]} -le 254 ]] && [[ ${Gateway_Val[0]} -ge 0 ]] && \		## validation check for correct gateway value
+
+	## validation check for correct gateway value
+	until [[ ${Gateway_Val[0]} -le 254 ]] && [[ ${Gateway_Val[0]} -ge 0 ]] && \
 	[[ ${Gateway_Val[1]} -le 254 ]] && [[ ${Gateway_Val[1]} -ge 0 ]] && \
 	[[ ${Gateway_Val[2]} -le 254 ]]  && [[ ${Gateway_Val[2]} -ge 0 ]] && \
 	[[ ${Gateway_Val[3]} -le 254 ]] && [[ ${Gateway_Val[3]} -ge 0 ]] && \
@@ -360,8 +365,10 @@ menu () {		## gui menu for selecting which setting to config
 	Root_Check		## call the Root_Check function
 	Zenity_Check		## call the Zenity_Check function
 
-	Menu_Val=$(zenity --list \		## gui menu for the user to select whether he wants to configure static DNS or IP
-	--text "What would you like to configure?" --title "Network configuration"  \
+	## gui menu for the user to select whether he wants to configure static DNS or IP
+	Menu_Val=$(zenity --list \
+	--text "What would you like to configure?" \
+	--title "Network configuration"  \
 	--column=Script --column="Description" \
 	--width 400 --height 400 "IP" "configure static IP address" "DNS" "Configure static main and scondary DNS servers")
 
