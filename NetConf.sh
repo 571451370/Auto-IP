@@ -100,7 +100,7 @@ Static_IP () {		## configure static IP
 		  else
 			  :
 		  fi
-    done
+	done
 
 	Gateway_Val=($(zenity --entry --text "Please enter Gateway" --title "IP setup" --width "400"))		## prompte the gui for the user to enter a gateway and puts it into a variable
 
