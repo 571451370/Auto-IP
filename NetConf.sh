@@ -328,7 +328,7 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 
 	elif [[ $Distro_Val =~ "debian" ]]; then
 		int_name=$(ip a |grep -Eo 'enp[0-9{1,4}]s[0-9{1,4}]' |head -1)
-		int_path=/etc/sysconfig/network-scripts/ifcfg-$int_name
+		int_path=/etc/interfaces
 		cat $int_path > $int_path.bck
 
 		cat $int_path |egrep -Eo "dns-servers"
