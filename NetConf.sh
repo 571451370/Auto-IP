@@ -70,14 +70,14 @@ Static_IP () {		## configure static IP
 	[[ ${IP_Val[2]} -le 254 ]] && [[ ${IP_Val[2]} -ge 0 ]] && \
 	[[ ${IP_Val[3]} -le 254 ]] && [[ ${IP_Val[3]} -ge 0 ]] && \
 	[[ ${#IP_Val[@]} -eq 4 ]] ;do
-    zenity --error --text "Is it that hard to enter a valid address? try agin..." --width "200"
-    IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
-	  if [[ $? -eq 1 ]] ;then		## check with exit status if the user wants to exit the script
-		  exit
-	  else
-		  :
-	  fi
-  done
+		zenity --error --text "Is it that hard to enter a valid address? try agin..." --width "200"
+		IP_Val=($(zenity --entry --text "Please enter an IP address" --title "IP setup" --width "400" ))
+		  if [[ $? -eq 1 ]] ;then		## check with exit status if the user wants to exit the script
+			  exit
+		  else
+			  :
+		  fi
+  	done
 
   NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))		## prompte the gui for the user to enter NetMask and puts it into a variable
 
@@ -93,13 +93,13 @@ Static_IP () {		## configure static IP
 	[[ ${NetMask_Val[2]} -le 255 ]]  && [[ ${NetMask_Val[2]} -ge 0 ]] && \
 	[[ ${NetMask_Val[3]} -le 255 ]] && [[ ${NetMask_Val[3]} -ge 0 ]] && \
 	[[ ${#NetMask_Val[@]} -eq 4 ]] ;do
-    zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
-    NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
-	  if [[ $? -eq 1 ]] ;then
-		  exit
-	  else
-		  :
-	  fi
+	    zenity --error --text "Is it that hard to enter a valid netmask? try agin..." --width "200"
+	    NetMask_Val=($(zenity --entry --text "Please enter Net Mask" --title "IP setup" --width "400"))
+		  if [[ $? -eq 1 ]] ;then
+			  exit
+		  else
+			  :
+		  fi
     done
 
 	Gateway_Val=($(zenity --entry --text "Please enter Gateway" --title "IP setup" --width "400"))		## prompte the gui for the user to enter a gateway and puts it into a variable
