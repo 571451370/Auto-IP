@@ -160,7 +160,7 @@ COMMENT
 			zenity --info --text "IP configuration completed successfully" --width 250
 			menu
 		else
-			zenity --error --text "Something went wrong trying to restart the \"network\" service" --width 250
+			zenity --error --text "Something went wrong while restarting the \"network\" service" --width 250
 		fi
 
 	elif [[ $Distro_Val =~ "debian" ]] ;then		## checks the user's environment
