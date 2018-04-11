@@ -162,8 +162,21 @@ Static_IP () {		## configure static IP
 			zenity --info --text "IP configuration completed successfully" --width 250
 			menu
 		else
-			zenity --error --text "Something went wrong while restarting the \"network\" service, falling back to previews state." --width 250
-			cat $int_path.bck > $int_path
+			cat $int_path.bck > $int_path		## restores the configuration file to previews state
+			(
+			## trys again to restart the service with previews configuration, if it secceed it lets the user know that something went wrong
+			## while configuring the network file, if it doesn't, it lets the user know that the current configuring could not be applied
+			## and the previews configuration could not be apllied, it also suggests the user to check the conf file by himself.
+			sleep 1
+			systemctl restart network
+			) |
+			zenity --progress --title "Net Config" --text "Restarting the network service with old config" --pulsate --auto-close --width 250
+			if [[ $? -eq 0 ]] ;then
+				zenity --error --text "Something went wrong while restarting the \"network\" service, falling back to previews state." --width 250
+			else
+				zenity --error --text "Something went wrong while restarting the \"network\" service, \
+				could not resolve the issue even when falling back to previews state, please check your configuration file at $int_path" --width 250
+			fi
 		fi
 
 	elif [[ $Distro_Val =~ "debian" ]] ;then		## checks the user's environment
@@ -233,8 +246,21 @@ Static_IP () {		## configure static IP
 			zenity --info --text "IP configuration completed successfully" --width 250
 			menu
 		else
-			zenity --error --text "Something went wrong while trying to restart the \"networking\" service" --width 250
-			cat $int_path.bck > $int_path
+			cat $int_path.bck > $int_path		## restores the configuration file to previews state
+			(
+			## trys again to restart the service with previews configuration, if it secceed it lets the user know that something went wrong
+			## while configuring the network file, if it doesn't, it lets the user know that the current configuring could not be applied
+			## and the previews configuration could not be apllied, it also suggests the user to check the conf file by himself.
+			sleep 1
+			systemctl restart networking
+			) |
+			zenity --progress --title "Net Config" --text "Restarting the network service with old config" --pulsate --auto-close --width 250
+			if [[ $? -eq 0 ]] ;then
+				zenity --error --text "Something went wrong while restarting the \"network\" service, falling back to previews state." --width 250
+			else
+				zenity --error --text "Something went wrong while restarting the \"network\" service, \
+				could not resolve the issue even when falling back to previews state, please check your configuration file at $int_path" --width 250
+			fi
 		fi
 		) |
 		zenity --progress --title "Net Config" --text "Re-configuring network services" --pulsate --auto-close --width 250
@@ -323,8 +349,18 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 			zenity --info --text "IP configuration completed successfully" --width 250
 			menu
 		else
-			zenity --error --text "Something went wrong while restarting the \"network\" service, falling back to previews state." --width 250
 			cat $int_path.bck > $int_path
+			(
+			sleep 1
+			systemctl restart network
+			) |
+			zenity --progress --title "Net Config" --text "Restarting the network service with old config" --pulsate --auto-close --width 250
+			if [[ $? -eq 0 ]] ;then
+				zenity --error --text "Something went wrong while restarting the \"network\" service, falling back to previews state." --width 250
+			else
+				zenity --error --text "Something went wrong while restarting the \"network\" service, \
+				could not resolve the issue even when falling back to previews state, please check your configuration file at $int_path" --width 250
+			fi
 		fi
 
 	elif [[ $Distro_Val =~ "debian" ]]; then
@@ -369,8 +405,18 @@ Static_DNS () {		## configure static DNS (follow the Static_IP function for docu
 			zenity --info --text "IP configuration completed successfully" --width 250
 			menu
 		else
-			zenity --error --text "Something went wrong while trying to restart the \"networking\" service" --width 250
 			cat $int_path.bck > $int_path
+			(
+			sleep 1
+			systemctl restart network
+			) |
+			zenity --progress --title "Net Config" --text "Restarting the network service with old config" --pulsate --auto-close --width 250
+			if [[ $? -eq 0 ]] ;then
+				zenity --error --text "Something went wrong while restarting the \"network\" service, falling back to previews state." --width 250
+			else
+				zenity --error --text "Something went wrong while restarting the \"network\" service, \
+				could not resolve the issue even when falling back to previews state, please check your configuration file at $int_path" --width 250
+			fi
 		fi
 		) |
 		zenity --progress --title "Net Config" --text "Re-configuring network services" --pulsate --auto-close --width 250
